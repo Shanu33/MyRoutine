@@ -1,12 +1,12 @@
 {
-    "name": "breathing_card_fc",
-    "short_name": "breathing_card_fc",
+    "name": "animation_practice",
+    "short_name": "animation_practice",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
     "theme_color": "#FFFFFF",
     "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "orientation": "portrait",
     "prefer_related_applications": false,
     "icons": [
         {
