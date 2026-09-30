@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Routine</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{--bg:#eef2ee;--card:#fbfcfa;--ink:#15302b;--mute:#63776f;--line:#d6dfd9;--acc:#0f5c53;--accfg:#fff;--warn:#a65d0a;--soft:#dfeae4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1918;--card:#14282a;--ink:#e6f1ec;--mute:#8fa8a0;--line:#25403f;--acc:#62d6b9;--accfg:#06201b;--warn:#e8a64f;--soft:#1b3536}}
+:root[data-theme="dark"]{--bg:#0d1918;--card:#14282a;--ink:#e6f1ec;--mute:#8fa8a0;--line:#25403f;--acc:#62d6b9;--accfg:#06201b;--warn:#e8a64f;--soft:#1b3536}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 "Bricolage Grotesque",system-ui,sans-serif;min-height:100%;-webkit-tap-highlight-color:transparent}
+main{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:baseline;padding:4px 4px 12px}
+.top b{font-size:1.1rem}.top span{color:var(--mute);font-size:.95rem}
+.clock{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;text-align:right}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px}
+.days button{padding:10px 0;border-radius:12px;font-weight:600;font-size:.82rem;color:var(--mute);min-height:44px}
+.days button.sel{background:var(--ink);color:var(--bg)}
+.days button.today:not(.sel){box-shadow:inset 0 0 0 2px var(--acc);color:var(--ink)}
+.now{background:var(--acc);color:var(--accfg);border-radius:26px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:6px;position:relative}
+.now small{opacity:.8;font-weight:600}
+.now h1{font-size:1.85rem;line-height:1.1;letter-spacing:-.02em;font-weight:800;padding-right:84px}
+.now .rng{font-size:1.02rem;opacity:.9}
+.now .focus{margin-top:6px;font-size:.95rem;opacity:.95}
+.ring{position:absolute;top:18px;right:18px;width:72px;height:72px}
+.ring text{fill:var(--accfg);font:700 14px "Bricolage Grotesque",system-ui,sans-serif}
+.btns{display:flex;gap:8px;margin-top:12px}
+.btns button{flex:1;min-height:48px;border-radius:14px;font-weight:700;background:rgba(255,255,255,.18);color:inherit}
+.btns button.go{background:var(--accfg);color:var(--acc)}
+.next{margin-top:10px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;min-height:64px}
+.next small{color:var(--mute);display:block}.next strong{font-size:1.1rem}
+.next .in{color:var(--warn);font-weight:700;text-align:right;font-size:.92rem}
+.prog{margin:16px 4px 4px}
+.prog div.row{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mute);margin-bottom:6px}
+.bar{height:10px;border-radius:9px;background:var(--soft);overflow:hidden}.bar i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.tip{margin:14px 0;padding:14px 16px;border-left:4px solid var(--warn);background:var(--card);border-radius:0 14px 14px 0;font-size:.95rem}
+.tip small{display:block;color:var(--warn);font-weight:700;margin-bottom:2px}
+h2{font-size:1rem;margin:20px 4px 8px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 4px 8px;scrollbar-width:none}
+.chips button{flex:none;padding:0 16px;min-height:44px;border-radius:22px;background:var(--card);border:1px solid var(--line);font-weight:600}
+.tl{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.tl button{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 16px;min-height:52px;border-bottom:1px solid var(--line)}
+.tl button:last-child{border:0}
+.tl .dot{width:24px;text-align:center;font-size:1.1rem;flex:none}
+.tl .t{flex:1;min-width:0}.tl .t small{display:block;color:var(--mute);font-size:.8rem}
+.tl .past{opacity:.5}.tl .past.done{opacity:.45}.tl .past .t strong{font-weight:400}
+.tl .cur{background:var(--soft)}.tl .cur strong{font-weight:800}
+.tl .fut{opacity:.92}
+.more{width:100%;padding:12px;color:var(--mute);font-weight:600;min-height:44px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.sheet.on{display:flex}
+.panel{background:var(--card);width:100%;max-width:560px;max-height:82%;overflow:auto;border-radius:26px 26px 0 0;padding:22px 22px calc(26px + env(safe-area-inset-bottom,0px));animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.panel{animation:none}.bar i{transition:none}}
+.panel h3{font-size:1.4rem;letter-spacing:-.01em}.panel p,.panel li{color:var(--mute);margin-top:6px}
+.panel ul{padding-left:20px}.panel .btns button{background:var(--soft)}
+.panel .btns button.on{background:var(--acc);color:var(--accfg)}
+.panel .x{float:right;min-width:44px;min-height:44px;font-size:1.3rem}
+.panel h4{margin-top:14px;font-size:.95rem}
+</style></head><body>
+<main>
+<div class="top"><div><b id="dn"></b><br><span id="dd"></span></div><div class="clock" id="ck"></div></div>
+<div class="days" id="days"></div>
+<div id="hero"></div>
+<div class="prog"><div class="row"><span>Today's progress</span><span id="pt"></span></div><div class="bar"><i id="pb" style="width:0"></i></div></div>
+<div class="tip" id="tip"></div>
+<h2>Explore</h2>
+<div class="chips" id="chips"></div>
+<h2 id="tlh">Timeline</h2>
+<div class="tl" id="tl"></div>
+<button class="more" id="more"></button>
+</main>
+<div class="sheet" id="sheet"><div class="panel" id="panel"></div></div>
+<script>
+const DN=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],SH=["SUN","MON","TUE","WED","THU","FRI","SAT"],ORDER=[1,2,3,4,5,6,0];
+const M=s=>{const[a,b]=s.split(":");return +a*60+ +b};
+const f12=m=>{let h=Math.floor(m/60)%24,mi=m%60,ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+String(mi).padStart(2,"0")+" "+ap};
+// [start,end,icon,title,cat,detail,labelOverride]
+const COLL={1:["NLP","BC / IR","BDA","ML"],2:["BDA","NLP","IR / BC","IR / BC"],3:["DMMM","IR / BC","IR / BC","ML"],4:["IR / BC","IR / BC","ML","IR / BC"],5:["NLP","ML","MLL","MLL / scheduled practical work"]};
+const STUDY={1:["BDA / Hadoop","Hadoop, HDFS, big data concepts"],2:["Machine Learning","Deep subject study"],3:["NLP","Deep subject study"],4:["Information Retrieval","TF-IDF|Inverted Index|Cosine Similarity"],5:["CSL / DMMM","CSL and DMMM study"]};
+const EVE={1:["🧮","Aptitude: Quantitative","apt"],2:["💻","Major Project","project"],3:["🧮","Aptitude: Logical Reasoning","apt"],4:["💻","Major Project","project"],5:["🧮","Aptitude: Quantitative","apt"]};
+const APTF="Concept → Easy → Medium → Company-level → Timed practice → Error analysis";
+const ENG=["🗣️","English lecture + speaking practice","english","Explain what you studied today in English. Commute English: listening in the morning, think/speak in the evening."];
+const SALAH=["🕌","","salah"];
+function weekday(d){const s=STUDY[d],e=EVE[d];return[
+["05:20","05:30","🌅","Wake up + Wudu","ready",""],
+["05:30","06:00","🕌","Fajr + Sunnahs","salah",""],
+["06:00","06:45","😴","Sleep","sleep","Short sleep"],
+["06:45","07:00","🚿","Wake up / freshen up","ready",""],
+["07:00","07:15","🎒","Get ready + bag","ready",""],
+["07:15","07:25","🍞","Light food if available","meal","No formal breakfast needed."],
+["07:25","08:30","🚆","Travel to college","travel","Leave at 7:25. Travel takes 50–90 min, so you reach college around 8:15–8:55. Listen to English: conversations, interviews, lectures, pronunciation, vocabulary.","7:25 – 8:30 AM"],
+["08:30","12:30","🏫","College","college",COLL[d].map((x,i)=>f12(510+i*60).replace(" AM","")+": "+x).join("|")],
+["12:30","13:30","🚆","Travel home","travel","Leave college at 12:30. Expected arrival about 1:20–2:00 PM. Don't study here: English listening or light revision only.","12:30 PM – ~1:30/2:00"],
+["13:30","13:45","🕌","Zuhr Jamaat","salah","Adhan 1:15 PM, Jamaat 1:30 PM, wherever you can practically attend.","1:30 PM"],
+["13:45","14:15","🍛","Lunch","meal","After Zuhr, 30–45 min. Elders decide when it's ready, so stay flexible.","After Zuhr"],
+["14:15","15:45","😴","Recovery nap","sleep","Not optional: this makes the late English class and early Fajr workable.","~2:15 – 3:45 PM"],
+["15:45","17:10","📚",s[0],"study","Main study block.|"+s[1],""],
+["17:23","18:10","🕌","Asr + Sunnahs","salah",""],
+["18:10","18:35","☕","Break / snack / refresh","break","","6:10 – 6:30 PM"],
+["18:35","18:50","🕌","Maghrib + Sunnahs","salah","","6:35 – 6:40 PM"],
+["18:50","20:10",e[0],e[1],e[2],e[2]=="apt"?APTF:"Major Project-I: BDA / ML / NLP / IR reinforce your subjects."],
+["20:10","20:30","🍽️","Dinner preparation / break","break",""],
+["20:30","23:00",...ENG],
+["23:00","23:25","🍛","Dinner","meal",""],
+["23:25","23:55","🕌","Isha + Sunnahs","salah",""],
+["23:55","24:00","📵","Prepare tomorrow + phone away","ready","","11:55 PM – 12:05 AM"],
+["00:00","05:20","😴","Main sleep","sleep","About 5 h 15 min.","12:05 – 5:20 AM"]]}
+const SAT=[
+["00:00","05:30","😴","Main sleep","sleep","","12:05 – 5:30 AM"],
+["05:30","06:00","🕌","Fajr + Sunnahs","salah",""],
+["06:00","07:30","😴","Sleep","sleep",""],
+["07:30","08:15","🚿","Get ready","ready",""],
+["08:15","09:00","🚆","Food + leave for library","travel","","8:15 – 9:00 AM"],
+["09:00","10:20","💻","Major Project (Library)","project","Library opens 9:00 AM."],
+["10:30","12:30","📖","ILOC / DMMM / CSL online","study","Library session."],
+["13:15","13:30","🕌","Zuhr Adhan","salah","Adhan at 1:15 PM."],
+["13:30","13:45","🕌","Zuhr + Sunnahs","salah",""],
+["13:45","14:00","🍛","Lunch","meal","After Zuhr. Library closes at 2:00 PM.","After Zuhr"],
+["14:00","15:00","🚆","Travel / rest","travel",""],
+["15:00","16:15","🧮","Aptitude deep practice","apt",APTF],
+["16:15","17:20","🛋️","Rest","break",""],
+["17:23","18:10","🕌","Asr + Sunnahs","salah",""],
+["18:35","18:50","🕌","Maghrib","salah","","6:35 – 6:40 PM"],
+["18:50","20:10","💻","Major Project","project",""],
+["20:30","23:00",...ENG],
+["23:00","23:25","🍛","Dinner","meal",""],
+["23:25","23:55","🕌","Isha","salah",""],
+["23:55","24:00","📵","Prepare + phone away","ready","","11:55 PM – 12:05 AM"]];
+const SUN=[
+["00:00","05:30","😴","Main sleep","sleep","","12:05 – 5:30 AM"],
+["05:30","06:00","🕌","Fajr","salah",""],
+["06:00","07:30","😴","Sleep","sleep",""],
+["07:30","08:00","🚿","Freshen up","ready",""],
+["08:00","09:15","🧮","Aptitude","apt",APTF],
+["09:15","09:30","☕","Break","break",""],
+["09:30","11:00","📚","Weekly academic revision","study","Revise all Semester VII subjects."],
+["11:00","12:30","💻","Major Project","project",""],
+["13:15","13:30","🕌","Zuhr","salah",""],
+["13:30","14:15","🍛","Lunch","meal",""],
+["14:15","15:15","😴","Rest","sleep",""],
+["15:15","16:15","📝","Timed aptitude test","apt","Test under real time pressure."],
+["16:15","17:10","📊","Analyze mistakes","study","Find patterns in errors."],
+["17:23","18:10","🕌","Asr + Sunnahs","salah",""],
+["18:35","18:50","🕌","Maghrib","salah","","6:35 – 6:40 PM"],
+["18:50","20:10","📚","Weakest subject of the week","study",""],
+["20:30","23:00",...ENG],
+["23:00","23:25","🍛","Dinner","meal",""],
+["23:25","23:55","🕌","Isha","salah",""],
+["23:55","24:00","📵","Prepare + phone away","ready","","12:05 AM sleep"]];
+const SCH=d=>d==6?SAT:d==0?SUN:weekday(d);
+const FILL={"break":1,"ready":1};
+const status={}; // "day|idx" -> 0,1,2
+let sel=new Date().getDay(),showAll=false;
+const $=id=>document.getElementById(id);
+const items=d=>SCH(d).map(r=>({s:M(r[0]),e:r[1]=="24:00"?1440:M(r[1]),i:r[2],t:r[3],c:r[4],d:r[5]||"",l:r[6]}));
+const lab=x=>x.l||f12(x.s)+" – "+f12(x.e%1440||1440);
+const dur=m=>m>=60?Math.floor(m/60)+"h "+(m%60?m%60+"m":""):m+" min";
+const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
+function find(list,t){let cur=null,nxt=null;for(const x of list){if(t>=x.s&&t<x.e)cur=x;else if(x.s>t&&(!nxt||x.s<nxt.s))nxt=x}if(cur){nxt=list.filter(x=>x.s>=cur.e).sort((a,b)=>a.s-b.s)[0]||null}return{cur,nxt}}
+function detail(x){const p=x.d.split("|").filter(Boolean);return p}
+function tick(){
+ const n=new Date(),t=nowMin(),today=n.getDay();
+ $("dn").textContent=DN[today];$("dd").textContent=n.toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+ $("ck").textContent=f12(t);
+ const list=items(today).sort((a,b)=>a.s-b.s);
+ const raw=items(today);let{cur,nxt}=find(list,t);
+ let gap=false;
+ if(!cur){gap=true;const pv=list.filter(x=>x.e<=t).pop();cur={s:pv?pv.e:0,e:nxt?nxt.s:1440,i:"☕",t:"Buffer time",c:"buffer",d:"A short gap in the routine. Rest, tidy up, or get ready for what's next.",l:""}}
+ const idx=raw.indexOf(list.find(x=>x.s==cur.s&&x.t==cur.t));
+ const left=cur.e-t,total=cur.e-cur.s,pct=Math.min(100,Math.max(0,(t-cur.s)/total*100));
+ const st=status[today+"|"+idx]||0,R=30,C=2*Math.PI*R;
+ const p=detail(cur);
+ let h=`<div class="now"><small>NOW</small><h1>${cur.i} ${cur.t}</h1><div class="rng">${gap?f12(cur.s)+" – "+f12(cur.e):lab(cur)}</div>`+
+ `<svg class="ring" viewBox="0 0 72 72"><circle cx="36" cy="36" r="${R}" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="6"/><circle cx="36" cy="36" r="${R}" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct/100)}" transform="rotate(-90 36 36)" style="color:var(--accfg)"/><text x="36" y="41" text-anchor="middle">${left>=60?Math.floor(left/60)+"h":left+"m"}</text></svg>`+
+ `<div class="rng"><b>${dur(left)} remaining</b></div>`+(p.length?`<div class="focus">${p[0]}</div>`:"");
+ if(!gap)h+=`<div class="btns"><button class="go" data-s="${idx}">${st==2?"✓ Done":st==1?"In progress: mark done":"Start"}</button><button data-o="${idx}">Details</button></div>`;
+ h+=`</div>`;
+ if(nxt){const w=nxt.s-t;h+=`<button class="next" data-o="${raw.indexOf(nxt)}"><div><small>NEXT</small><strong>${nxt.i} ${nxt.t}</strong><small>${lab(nxt)}</small></div><div class="in">Starts in<br>${dur(w)}</div></button>`}
+ else h+=`<div class="next"><div><small>NEXT</small><strong>🌙 Tomorrow begins at Fajr</strong></div></div>`;
+ $("hero").innerHTML=h;
+ // progress
+ const real=raw.filter(x=>!FILL[x.c]||true);const done=real.filter(x=>status[today+"|"+raw.indexOf(x)]==2).length;
+ $("pt").textContent=done+" of "+real.length+" done";$("pb").style.width=(done/real.length*100)+"%";
+ // tip
+ const missed=raw.some((x,i)=>x.e<=t&&["study","apt","project"].includes(x.c)&&status[today+"|"+i]!=2);
+ const T={study:"Focus on one concept instead of opening another topic.",apt:"Work with a timer. Focus on accuracy first, then speed.",project:"Pick one small piece and finish it before switching.",english:"Speak your explanations aloud, even slowly. Fluency grows with repetition.",salah:"Take your time. Nothing else needs you right now.",travel:"Keep it light: English listening or quiet revision. Save serious work for home.",college:"Stay present in lectures. It reduces what you need to study at home.",meal:"Eat without a screen. Rest is part of the plan.",sleep:"Rest is scheduled work. Protect it.",ready:"Move calmly. A smooth start sets up the next block.",break:nxt&&nxt.c=="english"?"Use the next few minutes to mentally explain today's technical topic in English.":"Step away briefly. You'll return sharper.",buffer:"Use this gap to reset. No need to add extra tasks."};
+ let tip=T[cur.c]||T.break;
+ if(nxt&&nxt.c=="english"&&["break","meal"].includes(cur.c)&&t<1230)tip=T.break.startsWith("Use")?T.break:"Use the next few minutes to mentally explain today's technical topic in English.";
+ if(t>=1405||t<300)tip="Your productive work is finished. Complete Isha and prepare for sleep.";
+ if(missed&&["study","apt","project","break","buffer"].includes(cur.c))tip+=" If you missed something, don't overload the next block. Continue with the current schedule.";
+ $("tip").innerHTML="<small>Smart suggestion</small>"+tip;
+ renderTL(t,today);
+}
+function renderTL(t,today){
+ const raw=items(sel),isT=sel==today,all=showAll;
+ $("tlh").textContent=(isT?"Today":DN[sel])+"'s timeline";
+ const order=raw.map((x,i)=>({...x,i:x.i,k:i})).sort((a,b)=>a.s-b.s);
+ let h="",vis=order;
+ if(isT&&!all){const ci=order.findIndex(x=>t>=x.s&&t<x.e),ni=order.findIndex(x=>x.s>t);const a=Math.max(0,(ci>=0?ci:Math.max(0,ni-1))-1);vis=order.slice(a,a+6)}
+ vis.forEach(x=>{const k=sel+"|"+x.k,st=status[k]||0;const cur=isT&&t>=x.s&&t<x.e,past=isT&&x.e<=t;
+  const dot=st==2?"✓":st==1?"◐":cur?"●":"○";
+  h+=`<button data-o="${x.k}" class="${cur?"cur":past?"past"+(st==2?" done":""):"fut"}"><span class="dot">${dot}</span><span class="t"><strong>${raw[x.k].i} ${x.t}</strong><small>${lab(x)}</small></span></button>`});
+ $("tl").innerHTML=h;
+ $("more").textContent=(isT&&!all)?"Show full day ("+order.length+" activities)":isT?"Show fewer":"";
+ $("more").style.display=isT?"":"none";
+}
+function buildDays(){const t=new Date().getDay();$("days").innerHTML=ORDER.map(d=>`<button data-d="${d}" class="${d==sel?"sel":""} ${d==t?"today":""}">${SH[d]}</button>`).join("")}
+function open(k){
+ const x=items(sel)[k];const p=detail(x),s=status[sel+"|"+k]||0;
+ const extra=x.c=="apt"?"":"";
+ $("panel").innerHTML=`<button class="x" id="cl" aria-label="Close">✕</button><h3>${x.i} ${x.t}</h3><p>${lab(x)} · ${dur(x.e-x.s)}</p>`+
+ (p.length?`<h4>Focus</h4><ul>${p.map(z=>`<li>${z}</li>`).join("")}</ul>`:"")+
+ `<div class="btns"><button data-m="0" class="${s==0?"on":""}">○ Not done</button><button data-m="1" class="${s==1?"on":""}">◐ In progress</button><button data-m="2" class="${s==2?"on":""}">✓ Done</button></div>`;
+ $("panel").dataset.k=k;$("sheet").classList.add("on");
+}
+const INFO={
+ Subjects:`<h3>Subjects</h3><h4>Weekly study cycle</h4><ul><li>Mon: BDA / Hadoop</li><li>Tue: ML</li><li>Wed: NLP</li><li>Thu: Information Retrieval</li><li>Fri: CSL / DMMM + project</li><li>Sat: Major Project + Aptitude</li><li>Sun: Revision + Aptitude test + Project</li></ul><p>Main study block: 3:45–5:10 PM, about 6 hours per week.</p>`,
+ Aptitude:`<h3>Aptitude</h3><ul><li>Mon and Fri: Quantitative Aptitude</li><li>Wed: Logical Reasoning</li><li>Sat: dedicated deep session</li><li>Sun: timed test</li></ul><p>${APTF}</p>`,
+ Project:`<h3>Major Project-I</h3><ul><li>Tue 6:50–8:10 PM (1h 20m)</li><li>Thu 6:50–8:10 PM (1h 20m)</li><li>Sat 9:00–10:20 AM and 6:50–8:10 PM</li><li>Sun 11:00 AM–12:30 PM</li></ul><p>About 5–7 hours of project work per week. It reinforces BDA, ML, NLP and IR.</p>`,
+ English:`<h3>English</h3><p>Every day, 8:30–11:00 PM: lecture + speaking practice.</p><ul><li>Morning commute: listening (conversation, interviews, lectures, pronunciation, vocabulary)</li><li>Evening commute: think or speak in English, e.g. "Today I studied HDFS…"</li></ul>`,
+ Salah:`<h3>Salah anchors</h3><ul><li>Fajr: 5:30–6:00 AM</li><li>Zuhr: Adhan 1:15 PM, Jamaat 1:30 PM</li><li>Asr: 5:23–6:10 PM</li><li>Maghrib: 6:35–6:40 PM</li><li>Isha: 11:25–11:55 PM (after dinner)</li></ul>`,
+ Sleep:`<h3>Sleep</h3><ul><li>Main: 12:05–5:20 AM (about 5 h 15 min)</li><li>Fajr sleep: 6:00–6:45 AM (45 min)</li><li>Recovery nap: ~2:15–3:45 PM (1 h 30 min)</li></ul><p>About 7.5 hours of total sleep opportunity.</p>`};
+$("chips").innerHTML=Object.keys(INFO).map(k=>`<button data-i="${k}">${k}</button>`).join("");
+document.addEventListener("click",e=>{
+ const b=e.target.closest("button");
+ if(e.target.id=="sheet"){$("sheet").classList.remove("on");return}
+ if(!b)return;
+ if(b.id=="cl"){$("sheet").classList.remove("on");return}
+ if(b.dataset.d!=null){sel=+b.dataset.d;buildDays();renderTL(nowMin(),new Date().getDay());return}
+ if(b.dataset.s!=null){const k=new Date().getDay()+"|"+b.dataset.s;status[k]=status[k]==1?2:status[k]==2?0:1;tick();return}
+ if(b.dataset.o!=null){const d=new Date().getDay();if(b.closest("#hero"))sel=d;buildDays();open(+b.dataset.o);return}
+ if(b.dataset.m!=null){const k=sel+"|"+$("panel").dataset.k;status[k]=+b.dataset.m;open(+$("panel").dataset.k);tick();return}
+ if(b.dataset.i){$("panel").innerHTML=`<button class="x" id="cl" aria-label="Close">✕</button>`+INFO[b.dataset.i];$("sheet").classList.add("on");return}
+ if(b.id=="more"){showAll=!showAll;tick()}
+});
+buildDays();tick();setInterval(tick,15000);
+</script></body></html>
