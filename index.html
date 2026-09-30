@@ -2,6 +2,14 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>My Routine</title>
+<meta name="theme-color" content="#0f5c53">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Routine">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f5c53'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%F0%9F%95%8C%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230f5c53'/%3E%3Ctext x='50' y='68' font-size='56' text-anchor='middle'%3E%F0%9F%95%8C%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
 <style>
 :root{--bg:#eef2ee;--card:#fbfcfa;--ink:#15302b;--mute:#63776f;--line:#d6dfd9;--acc:#0f5c53;--accfg:#fff;--warn:#a65d0a;--soft:#dfeae4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -63,6 +71,7 @@ h2{font-size:1rem;margin:20px 4px 8px}
 </style></head><body>
 <main>
 <div class="top"><div><b id="dn"></b><br><span id="dd"></span></div><div class="clock" id="ck"></div></div>
+<button class="more" id="inst" style="margin:-6px 0 8px;text-align:left;color:var(--acc)">📲 Install as app</button>
 <div class="days" id="days"></div>
 <div id="hero"></div>
 <div class="prog"><div class="row"><span>Today's progress</span><span id="pt"></span></div><div class="bar"><i id="pb" style="width:0"></i></div></div>
@@ -153,7 +162,11 @@ const SUN=[
 ["23:55","24:00","📵","Prepare + phone away","ready","","12:05 AM sleep"]];
 const SCH=d=>d==6?SAT:d==0?SUN:weekday(d);
 const FILL={"break":1,"ready":1};
-const status={}; // "day|idx" -> 0,1,2
+const wkKey=()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7));return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
+const SK="routine-status-v1";
+let status={};
+try{const o=JSON.parse(localStorage.getItem(SK)||"null");if(o&&o.w===wkKey())status=o.s||{}}catch(e){}
+const save=()=>{try{localStorage.setItem(SK,JSON.stringify({w:wkKey(),s:status}))}catch(e){}};
 let sel=new Date().getDay(),showAll=false;
 const $=id=>document.getElementById(id);
 const items=d=>SCH(d).map(r=>({s:M(r[0]),e:r[1]=="24:00"?1440:M(r[1]),i:r[2],t:r[3],c:r[4],d:r[5]||"",l:r[6]}));
@@ -231,11 +244,16 @@ document.addEventListener("click",e=>{
  if(!b)return;
  if(b.id=="cl"){$("sheet").classList.remove("on");return}
  if(b.dataset.d!=null){sel=+b.dataset.d;buildDays();renderTL(nowMin(),new Date().getDay());return}
- if(b.dataset.s!=null){const k=new Date().getDay()+"|"+b.dataset.s;status[k]=status[k]==1?2:status[k]==2?0:1;tick();return}
+ if(b.dataset.s!=null){const k=new Date().getDay()+"|"+b.dataset.s;status[k]=status[k]==1?2:status[k]==2?0:1;save();tick();return}
  if(b.dataset.o!=null){const d=new Date().getDay();if(b.closest("#hero"))sel=d;buildDays();open(+b.dataset.o);return}
- if(b.dataset.m!=null){const k=sel+"|"+$("panel").dataset.k;status[k]=+b.dataset.m;open(+$("panel").dataset.k);tick();return}
+ if(b.dataset.m!=null){const k=sel+"|"+$("panel").dataset.k;status[k]=+b.dataset.m;save();open(+$("panel").dataset.k);tick();return}
  if(b.dataset.i){$("panel").innerHTML=`<button class="x" id="cl" aria-label="Close">✕</button>`+INFO[b.dataset.i];$("sheet").classList.add("on");return}
  if(b.id=="more"){showAll=!showAll;tick()}
 });
+let dip=null;
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e;$("inst").style.display=""});
+$("inst").onclick=async()=>{if(dip){dip.prompt();dip=null;$("inst").style.display="none"}else{$("panel").innerHTML=`<button class="x" id="cl" aria-label="Close">✕</button><h3>Install as an app</h3><ul><li>iPhone (Safari): Share → Add to Home Screen</li><li>Android (Chrome): ⋮ menu → Install app / Add to Home screen</li></ul><p>It then opens full-screen like a normal app.</p>`;$("sheet").classList.add("on")}};
+if(matchMedia("(display-mode: standalone)").matches||navigator.standalone)$("inst").style.display="none";
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick()});
 buildDays();tick();setInterval(tick,15000);
-</script></body></html>
+</script><script>if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js")</script></body></html>
